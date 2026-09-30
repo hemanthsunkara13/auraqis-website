@@ -17,3 +17,5 @@ source-assets/*.HEIC
 __pycache__/
 
 /media-masters
+
+*.zip
