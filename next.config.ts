@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // GoDaddy Airo preview runs `npm run dev` behind this host.
+  allowedDevOrigins: ["**.airoapp.ai"],
   images: {
     formats: ["image/webp"],
     qualities: [75],
