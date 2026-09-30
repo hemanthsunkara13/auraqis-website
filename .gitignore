@@ -1,0 +1,19 @@
+node_modules/
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+.env*
+!.env.example
+.DS_Store
+tmp/
+# Raw camera originals (large). Web-ready derivatives live in public/.
+source-assets/*.mov
+source-assets/*.MOV
+source-assets/*.mp4
+source-assets/*.heic
+source-assets/*.HEIC
+__pycache__/
+
+/media-masters
