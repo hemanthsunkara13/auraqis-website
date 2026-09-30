@@ -1,0 +1,71 @@
+name: Build & Deploy to GoDaddy
+
+# Every push to main is built and checked. Deploying to auraqis.com is a manual
+# step: Actions -> "Build & Deploy to GoDaddy" -> Run workflow (after client approval).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      server_dir:
+        description: Remote folder on GoDaddy (relative to the FTP account root)
+        default: /public_html/
+        required: true
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: out/
+          include-hidden-files: true
+          retention-days: 7
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment:
+      name: production
+      url: https://auraqis.com
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: out/
+      - name: Upload changed files via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./out/
+          server-dir: ${{ inputs.server_dir }}
+      - name: Smoke test live site
+        run: |
+          for path in / /construction/ /interiors/ /projects/ /services/ /about/ /contact/ /robots.txt /sitemap.xml; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" -L "https://auraqis.com$path")
+            echo "$code $path"
+            [ "$code" = "200" ] || exit 1
+          done
+          curl -sL https://auraqis.com/ | grep -q "AURAQIS"
