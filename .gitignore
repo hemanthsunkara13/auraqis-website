@@ -19,3 +19,6 @@ __pycache__/
 /media-masters
 
 *.zip
+
+# Generated print files (business cards, stationery); rebuild with npm run print
+deliverables/

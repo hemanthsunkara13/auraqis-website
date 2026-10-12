@@ -7,6 +7,7 @@ import "lenis/dist/lenis.css";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ChromeGate } from "@/components/layout/ChromeGate";
 import { Providers } from "@/components/layout/Providers";
 import { site } from "@/config/site";
 import { organizationJsonLd } from "@/lib/seo";
@@ -56,9 +57,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <Providers>
-          <Header />
+          <ChromeGate>
+            <Header />
+          </ChromeGate>
           <main id="main">{children}</main>
-          <Footer />
+          <ChromeGate>
+            <Footer />
+          </ChromeGate>
         </Providers>
         <script
           type="application/ld+json"
