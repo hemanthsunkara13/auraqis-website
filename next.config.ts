@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // GoDaddy Airo preview runs `npm run dev` behind this host.
   allowedDevOrigins: ["**.airoapp.ai"],
+  // GoDaddy merges its own template files into the deploy; our code is checked by `npm run typecheck`.
+  typescript: { ignoreBuildErrors: true },
   images: {
     formats: ["image/webp"],
     qualities: [75],
